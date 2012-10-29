@@ -39,7 +39,7 @@
  * incremental updates.
  */
 
-require_once(dirname(__FILE__) . '/model.php');
+uses('model');
 
 abstract class Module extends Model
 {
