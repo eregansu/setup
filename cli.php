@@ -1,8 +1,8 @@
 <?php
 
-/* Eregansu: Additional command-line support
+/* Eregansu: Database schema setup
  *
- * Copyright 2009-2011 Mo McRoberts.
+ * Copyright 2009-2012 Mo McRoberts.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,34 +17,7 @@
  *  limitations under the License.
  */
 
-/**
- * @year 2009-2011
- * @since Available in Eregansu 1.0 and later. 
- */
-
-/**
- * Implements the default 'help' command-line route
- */
-class CliHelp extends CommandLine
-{
-	public function main($args)
-	{
-		if(!isset($this->request->data['_routes']))
-		{
-			echo "No help available\n";
-			return;
-		}
-		echo "Available commands:\n";
-		$routes = $this->request->data['_routes'];
-		ksort($routes);
-		foreach($routes as $cmd => $info)
-		{
-			if(substr($cmd, 0, 1) == '_') continue;
-			if(!isset($info['description'])) continue;
-			echo sprintf("  %-25s  %s\n", $cmd, $info['description']);
-		}
-	}
-}
+require_once(dirname(__FILE__) . '/module.php');
 
 /* For each registered module, perform any necessary database schema updates */
 class CliSetup extends CommandLine
@@ -66,8 +39,8 @@ class CliSetup extends CommandLine
 		{
 			$this->load($mod);
 		}
-		$this->load(array('name' => 'id', 'file' => PLATFORM_PATH . 'id-module.php', 'class' => 'IdentityModule'), null);
-		$this->load(array('name' => 'store', 'file' => PLATFORM_PATH . 'store-module.php', 'class' => 'StoreModule'), null);		
+		$this->load(array('name' => 'id', 'file' => PLATFORM_FRAMEWORK . 'id-module.php', 'class' => 'IdentityModule'), null);
+		$this->load(array('name' => 'store', 'file' => PLATFORM_FRAMEWORK . 'store-module.php', 'class' => 'StoreModule'), null);		
 		foreach($this->modules as $k => $mod)
 		{
 			$this->processSetup($k);
@@ -102,11 +75,14 @@ class CliSetup extends CommandLine
 		}
 		if(isset($mod['name']))
 		{
+			$suf = 'Schema';
 			if(!isset($mod['file']))
 			{
 				if(file_exists(MODULES_ROOT . $mod['name'] . '/module.php'))
 				{
+					/* Compatibility */
 					$mod['file'] = 'module.php';
+					$suf = 'Module';
 				}
 				else
 				{
@@ -115,7 +91,7 @@ class CliSetup extends CommandLine
 			}
 			if(!isset($mod['class']))
 			{
-				$mod['class'] = $mod['name'] . 'Module';
+				$mod['class'] = $mod['name'] . $suf;
 			}
 		}
 		if(isset($mod['name']))
