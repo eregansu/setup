@@ -1,6 +1,6 @@
 <?php
 
-/* Copyright 2012 Mo McRoberts.
+/* Copyright 2012-2013 Mo McRoberts.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 
 class BuiltinSetupModuleInstall extends BuiltinModuleInstaller
 {
-	public function canCoexistWithSoleWebModule()
-	{
-		return true;
-	}
+	public $coexists = true;
 
 	public function writeAppConfig($file, $isSoleWebModule = false, $chosenSoleWebModule = null)
 	{
+		fwrite($file, "\$CLI_ROUTES['migrate'] = array('file' => PLATFORM_ROOT . 'setup/cli.php', 'class' => 'CliMigrate', 'fromRoot' => true, 'description' => 'Update the application database schema');\n");
 		fwrite($file, "\$CLI_ROUTES['setup'] = array('file' => PLATFORM_ROOT . 'setup/cli.php', 'class' => 'CliSetup', 'fromRoot' => true);\n");
 	}
 }

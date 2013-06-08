@@ -2,7 +2,7 @@
 
 /* Eregansu: Database schema setup
  *
- * Copyright 2009-2012 Mo McRoberts.
+ * Copyright 2009-2013 Mo McRoberts.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 require_once(dirname(__FILE__) . '/module.php');
 
 /* For each registered module, perform any necessary database schema updates */
-class CliSetup extends CommandLine
+class CliMigrate extends CommandLine
 {
 	protected $modules = array();
 	
@@ -37,8 +37,6 @@ class CliSetup extends CommandLine
 		{
 			$this->load($mod);
 		}
-		$this->load(array('name' => 'id', 'file' => PLATFORM_FRAMEWORK . 'id-module.php', 'class' => 'IdentityModule'), null);
-		$this->load(array('name' => 'store', 'file' => PLATFORM_FRAMEWORK . 'store-module.php', 'class' => 'StoreModule'), null);		
 		foreach($this->modules as $k => $mod)
 		{
 			$this->processSetup($k);
@@ -157,4 +155,15 @@ class CliSetup extends CommandLine
 		$mod = $this->load($info);
 		$this->processSetup($mod['key']);
 	}
+}
+
+class CliSetup extends CliMigrate
+{
+	protected $modules = array();
+	
+	public function main($args)
+    {
+        echo "WARNING: 'setup' is deprecated -- use 'migrate' instead\n\n";
+        return parent::main($args);
+    }
 }
